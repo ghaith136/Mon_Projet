@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build Docker') {
+            steps {
+                bat 'docker build -t monapp:dev .'
+            }
+        }
+        stage('Test') {
+            steps {
+                bat 'docker run -d -p 8080:80 --name test_container monapp:dev'
+                bat 'timeout /t 10'
+                bat 'curl http://localhost:8080'
+                bat 'docker rm -f test_container'
+            }
+        }
+    }
+}
